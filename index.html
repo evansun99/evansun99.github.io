@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evan Sun — Photography</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--ink:#1a1815;--ink2:#2e2b28;--stone:#6b6560;--dust:#a09890;--linen:#f4f1ec;--paper:#faf8f5;--serif:"Cormorant Garamond",Georgia,serif;--sans:"Montserrat",sans-serif;--ease:cubic-bezier(0.76,0,0.24,1)}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-weight:300;overflow-x:hidden;cursor:none}
+.cursor{width:10px;height:10px;background:var(--ink);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s var(--ease),height .3s var(--ease);mix-blend-mode:exclusion}
+.cursor.expand{width:40px;height:40px}
+.cursor-ring{width:36px;height:36px;border:1px solid rgba(26,24,21,.35);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .45s var(--ease),top .45s var(--ease)}
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:2rem 3rem}
+nav::before{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(250,248,245,.92),transparent);pointer-events:none}
+.nav-logo{font-family:var(--serif);font-size:1.1rem;font-weight:400;letter-spacing:.08em;color:var(--ink);text-decoration:none;position:relative;cursor:pointer}
+.nav-links{display:flex;gap:3rem;list-style:none;position:relative}
+.nav-links a{font-size:.65rem;letter-spacing:.22em;text-transform:uppercase;color:var(--stone);text-decoration:none;transition:color .3s;cursor:pointer}
+.nav-links a:hover,.nav-links a.active{color:var(--ink)}
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+#home{background:var(--ink)}
+.hero{position:relative;height:100vh;overflow:hidden;display:flex;align-items:flex-end}
+.hero-slides{position:absolute;inset:0}
+.hero-slide{position:absolute;inset:0;opacity:0;transition:opacity 1.8s var(--ease)}
+.hero-slide.visible{opacity:1}
+.hero-slide img{width:100%;height:100%;object-fit:cover;transform:scale(1.04);transition:transform 8s var(--ease)}
+.hero-slide.visible img{transform:scale(1)}
+.hero-vignette{position:absolute;inset:0;background:linear-gradient(to top,rgba(26,24,21,.85) 0%,rgba(26,24,21,.1) 45%,transparent 70%),linear-gradient(to right,rgba(26,24,21,.3),transparent 60%)}
+.hero-content{position:relative;z-index:2;padding:0 3rem 4rem}
+.hero-name{font-family:var(--serif);font-size:clamp(3rem,7vw,6.5rem);font-weight:300;color:#fff;letter-spacing:.04em;line-height:1;margin-bottom:1.4rem;opacity:0;transform:translateY(20px);animation:fadeUp 1.2s var(--ease) .5s forwards}
+.hero-statement{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,241,236,.55);max-width:460px;line-height:2;opacity:0;transform:translateY(14px);animation:fadeUp 1.2s var(--ease) .9s forwards}
+.hero-index{position:absolute;right:3rem;bottom:4rem;z-index:2;display:flex;gap:.6rem;align-items:center}
+.hero-dot{width:18px;height:1px;background:rgba(255,255,255,.3);cursor:pointer;transition:background .3s,width .3s var(--ease)}
+.hero-dot.active{background:#fff;width:36px}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+.home-intro{background:var(--paper);padding:8rem 3rem}
+.section-eyebrow{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--dust);margin-bottom:1.5rem}
+.home-intro-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--linen);margin-top:5rem}
+.cat-card{background:var(--paper);cursor:pointer;overflow:hidden}
+.cat-card-img{aspect-ratio:4/5;overflow:hidden}
+.cat-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .9s var(--ease),filter .5s;filter:grayscale(15%)}
+.cat-card:hover .cat-card-img img{transform:scale(1.06);filter:grayscale(0%)}
+.cat-card-body{padding:1.6rem 1.8rem 2rem;border-top:1px solid var(--linen)}
+.cat-card-num{font-family:var(--serif);font-size:.7rem;color:var(--dust);letter-spacing:.15em;margin-bottom:.6rem}
+.cat-card-title{font-family:var(--serif);font-size:1.4rem;font-weight:400;line-height:1.2;margin-bottom:.9rem}
+.cat-card-desc{font-size:.72rem;line-height:1.85;color:var(--stone)}
+.cat-card-link{display:inline-flex;align-items:center;gap:.6rem;margin-top:1.4rem;font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--ink);border:none;background:none;cursor:pointer;transition:gap .3s var(--ease)}
+.cat-card:hover .cat-card-link{gap:1rem}
+#portfolio{background:var(--paper)}
+.portfolio-hero{height:55vh;position:relative;overflow:hidden;display:flex;align-items:flex-end}
+.portfolio-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.5)}
+.portfolio-hero-content{position:relative;z-index:2;padding:3.5rem 3rem}
+.portfolio-hero h1{font-family:var(--serif);font-size:clamp(2rem,5vw,4rem);font-weight:300;color:#fff;letter-spacing:.04em;margin-bottom:.6rem}
+.portfolio-hero p{font-size:.68rem;letter-spacing:.2em;color:rgba(255,255,255,.5);text-transform:uppercase}
+.cat-tabs{display:flex;align-items:center;padding:0 3rem;border-bottom:1px solid var(--linen);overflow-x:auto;scrollbar-width:none}
+.cat-tabs::-webkit-scrollbar{display:none}
+.cat-tab{flex-shrink:0;padding:1.4rem 0;margin-right:2.5rem;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dust);background:none;border:none;border-bottom:1px solid transparent;cursor:pointer;transition:color .3s,border-color .3s;white-space:nowrap}
+.cat-tab:hover{color:var(--stone)}
+.cat-tab.active{color:var(--ink);border-bottom-color:var(--ink)}
+.cat-section{display:none;padding:5rem 3rem}
+.cat-section.active{display:block}
+.cat-header{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;margin-bottom:5rem;padding-bottom:3rem;border-bottom:1px solid var(--linen)}
+.cat-header-left h2{font-family:var(--serif);font-size:clamp(1.8rem,3.5vw,3rem);font-weight:300;line-height:1.15;margin-bottom:1.2rem}
+.cat-header-left p{font-size:.78rem;line-height:1.9;color:var(--stone)}
+.cat-statement{padding:2rem 2.5rem;border-left:1px solid var(--linen)}
+.cat-statement-label{font-size:.58rem;letter-spacing:.25em;text-transform:uppercase;color:var(--dust);margin-bottom:1rem}
+.cat-statement-text{font-family:var(--serif);font-size:1.05rem;font-style:italic;font-weight:300;line-height:1.75;color:var(--stone)}
+.photo-grid{columns:3;column-gap:6px}
+.photo-grid-item{break-inside:avoid;margin-bottom:6px;position:relative;overflow:hidden;cursor:pointer;background:var(--linen)}
+.photo-grid-item img{width:100%;display:block;transition:transform .8s var(--ease),filter .5s;filter:brightness(.93)}
+.photo-grid-item:hover img{transform:scale(1.035);filter:brightness(1)}
+.photo-grid-caption{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(26,24,21,.72));padding:2rem 1.2rem .9rem;opacity:0;transition:opacity .4s}
+.photo-grid-item:hover .photo-grid-caption{opacity:1}
+.caption-title{font-family:var(--serif);font-size:.9rem;font-style:italic;color:#fff;display:block}
+.caption-meta{font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:.2rem;display:block}
+#about{background:var(--paper)}
+.about-layout{display:grid;grid-template-columns:5fr 7fr;min-height:100vh}
+.about-image-col{position:sticky;top:0;height:100vh;overflow:hidden}
+.about-image-col img{width:100%;height:100%;object-fit:cover;filter:grayscale(20%)}
+.about-text-col{padding:8rem 5rem 6rem}
+.about-eyebrow{font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--dust);margin-bottom:3rem}
+.about-name-large{font-family:var(--serif);font-size:clamp(2rem,4vw,3.5rem);font-weight:300;line-height:1.1;margin-bottom:3.5rem;letter-spacing:.02em}
+.about-bio{font-size:.9rem;line-height:2.1;color:var(--stone);max-width:480px}
+.about-bio p+p{margin-top:1.6rem}
+.about-divider{width:24px;height:1px;background:var(--linen);margin:3.5rem 0}
+.about-available{font-size:.68rem;letter-spacing:.15em;color:var(--dust);line-height:1.8;font-style:italic}
+#contact{background:var(--ink)}
+.contact-layout{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:10rem 3rem;max-width:700px;margin:0 auto}
+.contact-eyebrow{font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--stone);margin-bottom:2rem}
+.contact-heading{font-family:var(--serif);font-size:clamp(2rem,4.5vw,4rem);font-weight:300;color:var(--linen);line-height:1.15;margin-bottom:1.5rem;letter-spacing:.02em}
+.contact-sub{font-size:.78rem;line-height:1.9;color:var(--stone);margin-bottom:4rem}
+.contact-form{display:flex;flex-direction:column;gap:1.8rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}
+.form-group{display:flex;flex-direction:column}
+.form-group label{font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--stone);margin-bottom:.7rem}
+.form-group input,.form-group textarea,.form-group select{background:rgba(255,255,255,.04);border:none;border-bottom:1px solid rgba(255,255,255,.12);color:var(--linen);font-family:var(--sans);font-size:.82rem;font-weight:300;padding:.85rem 0;outline:none;transition:border-color .3s;-webkit-appearance:none}
+.form-group input::placeholder,.form-group textarea::placeholder{color:var(--stone)}
+.form-group input:focus,.form-group textarea:focus{border-bottom-color:var(--linen)}
+.form-group textarea{resize:none;height:100px}
+.form-group select{color:var(--stone);background:transparent;cursor:pointer}
+.form-group select option{background:var(--ink2);color:var(--linen)}
+.contact-submit{align-self:flex-start;margin-top:.5rem;padding:1rem 3rem;background:transparent;border:1px solid rgba(255,255,255,.2);color:var(--linen);font-family:var(--sans);font-size:.62rem;font-weight:300;letter-spacing:.25em;text-transform:uppercase;cursor:pointer;transition:background .4s,border-color .4s}
+.contact-submit:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.4)}
+.contact-links{display:flex;gap:3rem;margin-top:5rem;padding-top:3rem;border-top:1px solid rgba(255,255,255,.07)}
+.contact-link{display:flex;flex-direction:column;gap:.4rem}
+.contact-link-label{font-size:.55rem;letter-spacing:.25em;text-transform:uppercase;color:var(--stone)}
+.contact-link a{font-family:var(--serif);font-size:.95rem;font-style:italic;color:var(--dust);text-decoration:none;transition:color .3s}
+.contact-link a:hover{color:var(--linen)}
+.lightbox{position:fixed;inset:0;z-index:800;background:rgba(26,24,21,.97);display:none;align-items:center;justify-content:center;flex-direction:column}
+.lightbox.open{display:flex}
+.lightbox img{max-width:90vw;max-height:83vh;object-fit:contain;display:block}
+.lightbox-caption{margin-top:1.4rem;text-align:center}
+.lightbox-caption-title{font-family:var(--serif);font-size:1rem;font-style:italic;color:var(--dust);display:block}
+.lightbox-caption-meta{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--stone);margin-top:.3rem;display:block}
+.lightbox-close{position:absolute;top:2rem;right:2.5rem;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:none;border:none}
+.lightbox-close::before,.lightbox-close::after{content:"";position:absolute;width:20px;height:1px;background:var(--dust);transition:background .3s}
+.lightbox-close::before{transform:rotate(45deg)}
+.lightbox-close::after{transform:rotate(-45deg)}
+.lightbox-close:hover::before,.lightbox-close:hover::after{background:var(--linen)}
+.lb-btn{background:none;border:1px solid rgba(255,255,255,.15);color:var(--dust);font-family:var(--sans);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;padding:.5rem 1rem;cursor:pointer;transition:all .3s;position:absolute;bottom:2rem;right:2.5rem}
+.lb-btn:hover{border-color:rgba(255,255,255,.4);color:var(--linen)}
+footer{background:var(--ink2);display:flex;align-items:center;justify-content:space-between;padding:1.8rem 3rem}
+.footer-name{font-family:var(--serif);font-size:.85rem;color:var(--stone)}
+.footer-copy{font-size:.58rem;letter-spacing:.15em;color:var(--stone);opacity:.5}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.15s}
+.reveal-delay-2{transition-delay:.3s}
+@media(max-width:900px){nav{padding:1.5rem}.hero-content{padding:0 1.5rem 3rem}.home-intro{padding:5rem 1.5rem}.home-intro-grid{grid-template-columns:1fr}.cat-section{padding:3rem 1.5rem}.cat-header{grid-template-columns:1fr;gap:2rem}.photo-grid{columns:2}.about-layout{grid-template-columns:1fr}.about-image-col{position:relative;height:55vw}.about-text-col{padding:4rem 1.5rem}.contact-layout{padding:6rem 1.5rem}.form-row{grid-template-columns:1fr}footer{flex-direction:column;gap:.8rem;text-align:center}}
+@media(max-width:560px){.photo-grid{columns:1}.home-intro-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<nav>
+  <a class="nav-logo" onclick="showPage('home')">Evan Sun</a>
+  <ul class="nav-links">
+    <li><a onclick="showPage('home')" id="nav-home" class="active">Home</a></li>
+    <li><a onclick="showPage('portfolio')" id="nav-portfolio">Portfolio</a></li>
+    <li><a onclick="showPage('about')" id="nav-about">About</a></li>
+    <li><a onclick="showPage('contact')" id="nav-contact">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="page active" id="home">
+  <section class="hero">
+    <div class="hero-slides">
+      <div class="hero-slide visible"><img src="hero-01.jpg" alt=""></div>
+      <div class="hero-slide"><img src="hero-02.jpg" alt=""></div>
+      <div class="hero-slide"><img src="hero-03.jpg" alt=""></div>
+      <div class="hero-slide"><img src="hero-04.jpg" alt=""></div>
+    </div>
+    <div class="hero-vignette"></div>
+    <div class="hero-content">
+      <h1 class="hero-name">Evan Sun</h1>
+      <p class="hero-statement">Photography across Australia, observing landscape,<br>people, objects, and the quiet geometry of everyday life.</p>
+    </div>
+    <div class="hero-index">
+      <div class="hero-dot active" onclick="goSlide(0)"></div>
+      <div class="hero-dot" onclick="goSlide(1)"></div>
+      <div class="hero-dot" onclick="goSlide(2)"></div>
+      <div class="hero-dot" onclick="goSlide(3)"></div>
+    </div>
+  </section>
+  <section class="home-intro">
+    <p class="section-eyebrow reveal">Selected Work</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;max-width:900px">
+      <h2 class="reveal" style="font-family:var(--serif);font-size:clamp(1.6rem,3vw,2.6rem);font-weight:300;line-height:1.2;letter-spacing:.02em">An ongoing practice<br><em>rooted in observation.</em></h2>
+      <p class="reveal reveal-delay-1" style="font-size:.78rem;line-height:2;color:var(--stone);padding-top:.3rem">Six bodies of work — landscape, architecture, people, still life, street life, and industry. Together they form a coherent visual world shaped by patience, restraint, and a deep attention to the ordinary.</p>
+    </div>
+    <div class="home-intro-grid">
+      <div class="cat-card reveal" onclick="showPortfolio('landscapes')">
+        <div class="cat-card-img"><img src="home-card-landscapes.jpg" alt="Natural Landscapes"></div>
+        <div class="cat-card-body"><div class="cat-card-num">01</div><h3 class="cat-card-title">Natural Landscapes</h3><p class="cat-card-desc">Open coastlines, ancient forests, and the vast silence of the Australian interior — observed with patience and restraint.</p><button class="cat-card-link">View series <span>&#8594;</span></button></div>
+      </div>
+      <div class="cat-card reveal reveal-delay-1" onclick="showPortfolio('city')">
+        <div class="cat-card-img"><img src="home-card-city.jpg" alt="Architecture & Art"></div>
+        <div class="cat-card-body"><div class="cat-card-num">02</div><h3 class="cat-card-title">Architecture &amp; Art</h3><p class="cat-card-desc">City skylines, heritage streets, and art spaces — architecture as memory, form, and quiet cultural record.</p><button class="cat-card-link">View series <span>&#8594;</span></button></div>
+      </div>
+      <div class="cat-card reveal reveal-delay-2" onclick="showPortfolio('portraits')">
+        <div class="cat-card-img"><img src="home-card-portraits.jpg" alt="People in Light"></div>
+        <div class="cat-card-body"><div class="cat-card-num">03</div><h3 class="cat-card-title">People in Light</h3><p class="cat-card-desc">People photographed within nature — open fields, still water, seasonal light — where landscape becomes the quiet language of presence.</p><button class="cat-card-link">View series <span>&#8594;</span></button></div>
+      </div>
+      <div class="cat-card reveal" onclick="showPortfolio('stilllife')">
+        <div class="cat-card-img"><img src="home-card-stilllife.jpg" alt="Still Life &amp; Form"></div>
+        <div class="cat-card-body"><div class="cat-card-num">04</div><h3 class="cat-card-title">Still Life &amp; Form</h3><p class="cat-card-desc">Everyday objects, tactile surfaces, and quiet compositions — shape, balance, texture, and light allowed to become the subject.</p><button class="cat-card-link">View series <span>&#8594;</span></button></div>
+      </div>
+      <div class="cat-card reveal reveal-delay-1" onclick="showPortfolio('street')">
+        <div class="cat-card-img"><img src="home-card-street.jpg" alt="Street Humanity"></div>
+        <div class="cat-card-body"><div class="cat-card-num">05</div><h3 class="cat-card-title">Street Humanity</h3><p class="cat-card-desc">Ordinary people in ordinary moments — each frame carrying a fragment of a life not fully seen.</p><button class="cat-card-link">View series <span>&#8594;</span></button></div>
+      </div>
+      <div class="cat-card reveal reveal-delay-2" onclick="showPortfolio('industrial')">
+        <div class="cat-card-img"><img src="home-card-industrial.jpg" alt="Industrial Echoes"></div>
+        <div class="cat-card-body"><div class="cat-card-num">06</div><h3 class="cat-card-title">Industrial Echoes</h3><p class="cat-card-desc">Industrial sites and aging structures — geometry, texture, and atmospheric colour that carries the memory of use.</p><button class="cat-card-link">View series <span>&#8594;</span></button></div>
+      </div>
+    </div>
+  </section>
+  <footer><span class="footer-name">Evan Sun — Photography</span><span class="footer-copy">&#169; 2025 &middot; Australia</span></footer>
+</div>
+
+<div class="page" id="portfolio">
+  <div class="portfolio-hero">
+    <img src="portfolio-hero-landscapes.jpg" alt="" id="portfolioHeroImg">
+    <div class="portfolio-hero-content"><h1 id="portfolioHeroTitle">Portfolio</h1><p>Evan Sun &middot; Australia</p></div>
+  </div>
+  <div class="cat-tabs">
+    <button class="cat-tab active" onclick="switchCat('landscapes',this)">Natural Landscapes</button>
+    <button class="cat-tab" onclick="switchCat('city',this)">Architecture &amp; Art</button>
+    <button class="cat-tab" onclick="switchCat('portraits',this)">People in Light</button>
+    <button class="cat-tab" onclick="switchCat('stilllife',this)">Still Life &amp; Form</button>
+    <button class="cat-tab" onclick="switchCat('street',this)">Street Humanity</button>
+    <button class="cat-tab" onclick="switchCat('industrial',this)">Industrial Echoes</button>
+  </div>
+  <div class="cat-section active" id="cat-landscapes">
+    <div class="cat-header">
+      <div class="cat-header-left"><p class="section-eyebrow">Series 01</p><h2>Natural Landscapes</h2><p>Across Australia, the land reveals extraordinary variation — open coastlines, desert silence, ancient rock forms, forests, and changing light. This series focuses on the raw presence of nature and the emotional power of real landscapes.</p></div>
+      <div class="cat-statement"><p class="cat-statement-label">Artist Statement</p><p class="cat-statement-text">"These images are made with patience and restraint. Rather than dramatizing nature, they seek to reveal its inherent scale, rhythm, and stillness."</p></div>
+    </div>
+    <div class="photo-grid" id="grid-landscapes"></div>
+  </div>
+  <div class="cat-section" id="cat-city">
+    <div class="cat-header">
+      <div class="cat-header-left"><p class="section-eyebrow">Series 02</p><h2>Architecture &amp; Art</h2><p>Cities are not only places — they are accumulated layers of time, taste, and human intention. This series moves through contemporary skylines, weathered heritage precincts, and cultural institutions, looking for the moments when architecture becomes more than function: when it carries memory, reflects light in unexpected ways, or frames the world with quiet precision.</p></div>
+      <div class="cat-statement"><p class="cat-statement-label">Artist Statement</p><p class="cat-statement-text">"Architecture holds the stories of those who built it and those who passed through it. I photograph buildings not as monuments, but as living documents — surfaces that age, streets that remember, spaces where art and daily life meet without announcement."</p></div>
+    </div>
+    <div class="photo-grid" id="grid-city"></div>
+  </div>
+  <div class="cat-section" id="cat-portraits">
+    <div class="cat-header">
+      <div class="cat-header-left"><p class="section-eyebrow">Series 03</p><h2>People in Light</h2><p>These portraits are made outdoors, in natural surroundings — beside water, among flowers, beneath trees, in the open air of parks and seasons. Rather than isolating the subject, the landscape is invited in. Light becomes a collaborator: soft, directional, honest. The result is portraiture that feels unhurried and alive, where a person's presence is inseparable from the world around them.</p></div>
+      <div class="cat-statement"><p class="cat-statement-label">Artist Statement</p><p class="cat-statement-text">"The most truthful portraits happen when someone forgets the camera is there — when the light finds them, and the landscape holds them, and for a moment everything is still."</p></div>
+    </div>
+    <div class="photo-grid" id="grid-portraits"></div>
+  </div>
+  <div class="cat-section" id="cat-stilllife">
+    <div class="cat-header">
+      <div class="cat-header-left"><p class="section-eyebrow">Series 04</p><h2>Still Life &amp; Form</h2><p>Everyday objects are photographed with clarity and restraint, allowing shape, balance, texture, and light to become the subject. The compositions are minimal, tactile, and quietly precise — ordinary things made to speak through careful attention and stillness.</p></div>
+      <div class="cat-statement"><p class="cat-statement-label">Artist Statement</p><p class="cat-statement-text">"When distraction is removed, form begins to speak. These images focus on essence, material, and the presence of ordinary things — the weight of an object, the grain of a surface, the way light falls without drama."</p></div>
+    </div>
+    <div class="photo-grid" id="grid-stilllife"></div>
+  </div>
+  <div class="cat-section" id="cat-street">
+    <div class="cat-header">
+      <div class="cat-header-left"><p class="section-eyebrow">Series 05</p><h2>Street Humanity</h2><p>Every person on the street carries a life that the photograph can only partially suggest. This series looks for the small gestures, quiet expressions, and unguarded moments that reveal something true about how people move through the world. The settings are ordinary: parks, bridges, city corners, public spaces. The interest is always in the person, and in the unspoken story behind their presence there.</p></div>
+      <div class="cat-statement"><p class="cat-statement-label">Artist Statement</p><p class="cat-statement-text">"Street photography is really about proximity — how close you can get, not physically, but in terms of attention. When you truly see someone, even briefly, the photograph becomes something more than a record. It becomes a question."</p></div>
+    </div>
+    <div class="photo-grid" id="grid-street"></div>
+  </div>
+  <div class="cat-section" id="cat-industrial">
+    <div class="cat-header">
+      <div class="cat-header-left"><p class="section-eyebrow">Series 06</p><h2>Industrial Echoes</h2><p>Industrial sites, aging structures, pipes, surfaces, and forgotten functional spaces photographed with attention to geometry, texture, and atmospheric colour. These images reveal beauty in use, weathering, and structure.</p></div>
+      <div class="cat-statement"><p class="cat-statement-label">Artist Statement</p><p class="cat-statement-text">"Industrial spaces carry the memory of function. In their surfaces and forms, they preserve a quiet history of labour, utility, and time."</p></div>
+    </div>
+    <div class="photo-grid" id="grid-industrial"></div>
+  </div>
+  <footer><span class="footer-name">Evan Sun — Photography</span><span class="footer-copy">&#169; 2025 &middot; Australia</span></footer>
+</div>
+
+<div class="page" id="about">
+  <div class="about-layout">
+    <div class="about-image-col"><img src="about-portrait.jpg" alt="Evan Sun"></div>
+    <div class="about-text-col">
+      <p class="about-eyebrow">About</p>
+      <h1 class="about-name-large">Evan Sun</h1>
+      <div class="about-bio">
+        <p>Evan Sun is a photographer based in Australia, working across documentary photography, landscape, portraiture, still life, and urban observation. His practice is guided by a sensitivity to light, structure, atmosphere, and the quiet emotional weight of ordinary moments.</p>
+        <p>His images move between human presence and spatial order, between the openness of the natural world and the density of the built environment. Whether photographing a landscape, a face, a street corner, or a living creature in stillness, he looks for clarity, restraint, and a sense of lasting atmosphere.</p>
+        <p>Rooted in observation rather than spectacle, his work reflects an ongoing interest in how photography can transform everyday reality into something precise, tactile, and quietly memorable.</p>
+      </div>
+      <div class="about-divider"></div>
+      <p class="about-available">Available for editorial, portrait, cultural,<br>and selected commercial projects in Australia.</p>
+      <div style="margin-top:4rem;display:flex;gap:3rem;flex-wrap:wrap">
+        <div><p style="font-size:.58rem;letter-spacing:.25em;text-transform:uppercase;color:var(--dust);margin-bottom:.6rem">Practice</p><p style="font-size:.78rem;line-height:2;color:var(--stone)">Landscape<br>Architecture &amp; Art<br>People in Light<br>Still Life &amp; Form<br>Street Humanity<br>Industrial Echoes</p></div>
+        <div><p style="font-size:.58rem;letter-spacing:.25em;text-transform:uppercase;color:var(--dust);margin-bottom:.6rem">Location</p><p style="font-size:.78rem;line-height:2;color:var(--stone)">Based in Australia<br>Available to travel</p></div>
+        <div><p style="font-size:.58rem;letter-spacing:.25em;text-transform:uppercase;color:var(--dust);margin-bottom:.6rem">Enquiries</p><p style="font-size:.78rem;line-height:2;color:var(--stone)">hello@evansun.com<br>@evansun</p></div>
+      </div>
+    </div>
+  </div>
+  <footer><span class="footer-name">Evan Sun — Photography</span><span class="footer-copy">&#169; 2025 &middot; Australia</span></footer>
+</div>
+
+<div class="page" id="contact">
+  <div class="contact-layout">
+    <p class="contact-eyebrow">Contact</p>
+    <h1 class="contact-heading">Let's work<br><em style="font-style:italic;color:var(--dust)">together.</em></h1>
+    <p class="contact-sub">For collaborations, commissions, exhibitions, or project enquiries, please get in touch.</p>
+    <form class="contact-form" onsubmit="handleSubmit(event)">
+      <div class="form-row">
+        <div class="form-group"><label>Name</label><input type="text" placeholder="Your name"></div>
+        <div class="form-group"><label>Email</label><input type="email" placeholder="your@email.com"></div>
+      </div>
+      <div class="form-group"><label>Enquiry type</label><select><option value="">Select type</option><option>Editorial commission</option><option>Portrait session</option><option>Exhibition collaboration</option><option>Commercial project</option><option>Print purchase</option><option>Other</option></select></div>
+      <div class="form-group"><label>Message</label><textarea placeholder="Tell me about your project..."></textarea></div>
+      <button type="submit" class="contact-submit">Send enquiry</button>
+    </form>
+    <div class="contact-links">
+      <div class="contact-link"><span class="contact-link-label">Email</span><a href="mailto:hello@evansun.com">hello@evansun.com</a></div>
+      <div class="contact-link"><span class="contact-link-label">Instagram</span><a href="#">@evansun</a></div>
+      <div class="contact-link"><span class="contact-link-label">Location</span><a href="#">Australia</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLb()"></button>
+  <img id="lbImg" src="" alt="">
+  <div class="lightbox-caption"><span class="lightbox-caption-title" id="lbTitle"></span><span class="lightbox-caption-meta" id="lbMeta"></span></div>
+  <button class="lb-btn" onclick="closeLb()">Close</button>
+</div>
+
+<script>
+// CURSOR
+var cur = document.getElementById('cursor');
+var ring = document.getElementById('cursorRing');
+document.addEventListener('mousemove', function(e){
+  cur.style.left = e.clientX+'px'; cur.style.top = e.clientY+'px';
+  setTimeout(function(){ ring.style.left=e.clientX+'px'; ring.style.top=e.clientY+'px'; }, 80);
+});
+document.querySelectorAll('a,button,.cat-card,.photo-grid-item,.hero-dot').forEach(function(el){
+  el.addEventListener('mouseenter',function(){ cur.classList.add('expand'); });
+  el.addEventListener('mouseleave',function(){ cur.classList.remove('expand'); });
+});
+
+// PHOTO CATALOGUE
+// Format per entry: ["filename.jpg", "Title shown on hover", "Location, Year"]
+// Leave title/meta as "" to show no caption text.
+// Files that don't exist are hidden automatically — safe to leave extra entries.
+var PHOTOS = {
+  landscapes: [
+    ["landscapes-01.jpg","",""],["landscapes-02.jpg","",""],["landscapes-03.jpg","",""],
+    ["landscapes-04.jpg","",""],["landscapes-05.jpg","",""],["landscapes-06.jpg","",""],
+    ["landscapes-07.jpg","",""],["landscapes-08.jpg","",""],["landscapes-09.jpg","",""],
+    ["landscapes-10.jpg","",""],["landscapes-11.jpg","",""]
+  ],
+  city: [
+    ["city-01.jpg","",""],["city-02.jpg","",""],["city-03.jpg","",""],
+    ["city-04.jpg","",""],["city-05.jpg","",""]
+  ],
+  portraits: [
+    ["portraits-01.jpg","",""],["portraits-02.jpg","",""],["portraits-03.jpg","",""],
+    ["portraits-04.jpg","",""],["portraits-05.jpg","",""],["portraits-06.jpg","",""],
+    ["portraits-07.jpg","",""],["portraits-08.jpg","",""],["portraits-09.jpg","",""],
+    ["portraits-10.jpg","",""],["portraits-11.jpg","",""],["portraits-12.jpg","",""],
+    ["portraits-13.jpg","",""]
+  ],
+  stilllife: [
+    ["stilllife-01.jpg","",""],["stilllife-02.jpg","",""],["stilllife-03.jpg","",""],
+    ["stilllife-04.jpg","",""],["stilllife-05.jpg","",""],["stilllife-06.jpg","",""],
+    ["stilllife-07.jpg","",""],["stilllife-08.jpg","",""],["stilllife-09.jpg","",""],
+    ["stilllife-10.jpg","",""]
+  ],
+  street: [
+    ["street-01.jpg","",""],["street-02.jpg","",""],["street-03.jpg","",""],
+    ["street-04.jpg","",""],["street-05.jpg","",""],["street-06.jpg","",""],
+    ["street-07.jpg","",""],["street-08.jpg","",""],["street-09.jpg","",""],
+    ["street-10.jpg","",""],["street-11.jpg","",""]
+  ],
+  industrial: [
+    ["industrial-01.jpg","",""],["industrial-02.jpg","",""],
+    ["industrial-03.jpg","",""],["industrial-04.jpg","",""]
+  ]
+};
+
+function buildGrid(cat){
+  var grid = document.getElementById('grid-'+cat);
+  if(!grid) return;
+  grid.innerHTML='';
+  (PHOTOS[cat]||[]).forEach(function(entry){
+    var file=entry[0], title=entry[1], meta=entry[2];
+    var wrap=document.createElement('div');
+    wrap.className='photo-grid-item';
+    wrap.onclick=function(){ openLb(''+file,title,meta); };
+    var img=document.createElement('img');
+    img.src=''+file; img.alt=title; img.loading='lazy';
+    img.onerror=function(){ wrap.style.display='none'; };
+    var cap=document.createElement('div');
+    cap.className='photo-grid-caption';
+    cap.innerHTML='<span class="caption-title">'+title+'</span><span class="caption-meta">'+meta+'</span>';
+    wrap.appendChild(img); wrap.appendChild(cap); grid.appendChild(wrap);
+  });
+}
+Object.keys(PHOTOS).forEach(buildGrid);
+
+// PORTFOLIO HERO
+var HERO_IMGS={landscapes:'portfolio-hero-landscapes.jpg',city:'portfolio-hero-city.jpg',portraits:'portfolio-hero-portraits.jpg',stilllife:'portfolio-hero-stilllife.jpg',street:'portfolio-hero-street.jpg',industrial:'portfolio-hero-industrial.jpg'};
+var HERO_TITLES={landscapes:'Natural Landscapes',city:'Architecture & Art',portraits:'People in Light',stilllife:'Still Life &amp; Form',street:'Street Humanity',industrial:'Industrial Echoes'};
+
+function switchCat(id,btn){
+  document.querySelectorAll('.cat-section').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelectorAll('.cat-tab').forEach(function(t){ t.classList.remove('active'); });
+  var sec=document.getElementById('cat-'+id);
+  if(sec) sec.classList.add('active');
+  if(btn) btn.classList.add('active');
+  document.getElementById('portfolioHeroImg').src=HERO_IMGS[id]||'';
+  document.getElementById('portfolioHeroTitle').textContent=HERO_TITLES[id]||'Portfolio';
+}
+
+// PAGE NAV
+function showPage(id){
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.nav-links a').forEach(function(a){ a.classList.remove('active'); });
+  var p=document.getElementById(id); if(p) p.classList.add('active');
+  var n=document.getElementById('nav-'+id); if(n) n.classList.add('active');
+  window.scrollTo(0,0); initReveal();
+}
+function showPortfolio(cat){
+  showPage('portfolio');
+  var tabs=document.querySelectorAll('.cat-tab');
+  var idx={landscapes:0,city:1,portraits:2,stilllife:3,street:4,industrial:5};
+  tabs.forEach(function(t){ t.classList.remove('active'); });
+  if(idx[cat]!==undefined) tabs[idx[cat]].classList.add('active');
+  switchCat(cat,null);
+}
+
+// HERO SLIDESHOW
+var slideIdx=0;
+var slides=document.querySelectorAll('.hero-slide');
+var dots=document.querySelectorAll('.hero-dot');
+function goSlide(i){
+  slides[slideIdx].classList.remove('visible'); dots[slideIdx].classList.remove('active');
+  slideIdx=i;
+  slides[slideIdx].classList.add('visible'); dots[slideIdx].classList.add('active');
+}
+setInterval(function(){ goSlide((slideIdx+1)%slides.length); },5500);
+
+// LIGHTBOX
+function openLb(src,title,meta){
+  document.getElementById('lbImg').src=src;
+  document.getElementById('lbTitle').textContent=title;
+  document.getElementById('lbMeta').textContent=meta;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLb(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.getElementById('lightbox').addEventListener('click',function(e){ if(e.target===document.getElementById('lightbox')) closeLb(); });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeLb(); });
+
+// CONTACT
+function handleSubmit(e){
+  e.preventDefault();
+  var btn=e.target.querySelector('.contact-submit');
+  btn.textContent='Message sent.';
+  setTimeout(function(){ btn.textContent='Send enquiry'; },3000);
+}
+
+// SCROLL REVEAL
+function initReveal(){
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  },{threshold:0.08});
+  document.querySelectorAll('.reveal').forEach(function(el){ el.classList.remove('visible'); obs.observe(el); });
+}
+initReveal();
+</script>
+</body>
+</html>
