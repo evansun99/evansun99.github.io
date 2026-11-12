@@ -37,6 +37,7 @@
   <div class="overlay modal-overlay" id="groupQrOverlay"><section class="modal-card qr-modal"><div class="modal-head"><h3>加入微信顾客群</h3><button class="close" data-close="groupQrOverlay">×</button></div><img class="group-qr" src="assets/wechat-group.jpg" alt="微信顾客群二维码"><p>请使用微信扫描二维码加入顾客群</p></section></div>
   <div class="toast" id="toast">已加入购物车</div>
   <script>
+    window.YUJI_ORDER_ENDPOINT='https://script.google.com/macros/s/AKfycbwvWIZQ50BxmCUSmi8E2vV95plTabYAPHn5sUEKuW35O1GGDwScKfzPL9xapDMZtkIe/exec';
     const products=[{id:'head',name:'鸭头',singlePrice:5,boxQty:3,img:'assets/duck-head.jpg'},{id:'neck',name:'鸭脖',singlePrice:5,boxQty:3,img:'assets/duck-neck.jpg'},{id:'wing',name:'鸭翅',singlePrice:3,boxQty:5,img:'assets/duck-wing.png'},{id:'feet',name:'鸭掌',singlePrice:1.5,boxQty:10,img:'assets/duck-feet.png'}];
     const sampler={id:'sampler',name:'招牌组合',price:14.5,detail:'鸭头1个＋鸭脖1个＋鸭翅1个＋鸭掌2个',img:'assets/hero-duck.jpg'};
     const ORDER_API_ENDPOINT=window.YUJI_ORDER_ENDPOINT||'';
